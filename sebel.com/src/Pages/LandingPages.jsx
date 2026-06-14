@@ -9,9 +9,7 @@ import { CookieManager } from "../Services/CookiesFactory/BaseCookies";
 import { GoogleCookieFactory } from "../Services/CookiesFactory/GoogleCookieFactory";
 import { ModalCustom } from "../Components/Notifications/ModalCustom";
 
-// Singleton Cookie Manager
 const manager = new CookieManager();
-
 const fetchLocationAndSaveCookie = () => {
     if (!navigator.geolocation) {
         console.log("Geolocation tidak didukung oleh browser Anda.");
@@ -23,18 +21,14 @@ const fetchLocationAndSaveCookie = () => {
             const { latitude, longitude } = position.coords;
             
             try {
-                // Menggunakan OpenStreetMap Nominatim API (Gratis & Tanpa API Key)
                 const response = await fetch(
                     `https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}&zoom=10`
                 );
                 const data = await response.json();
-                
-                // Mengambil nama kota/kabupaten dari hasil response
                 const city = data.address.city || data.address.town || data.address.village || data.address.county || "Kota Tidak Diketahui";
                 
                 setCurrentCity(city);
 
-                // 🌟 Simpan ke Cookie menggunakan Factory & Manager Anda
                 const locationCookie = GoogleCookieFactory.createCookie("location", "USER_CITY", city);
                 manager.save(locationCookie);
                 
@@ -51,38 +45,31 @@ const fetchLocationAndSaveCookie = () => {
 
 const LandingPage = () => {
     const navigate = useNavigate();
-
-    // State Cookie & Modal
     const [currentCity, setCurrentCity] = useState("");
     const [showCookieModal, setShowCookieModal] = useState(false);
     const [isManageSettings, setIsManageSettings] = useState(false);
     const [allowAnalytics, setAllowAnalytics] = useState(true);
 
     useEffect(() => {
-        // Cek apakah user sudah memberikan persetujuan cookie
         const consentCookie = manager.get("COOKIE_CONSENT");
         if (!consentCookie) {
             setShowCookieModal(true);
         }
     }, []);
 
-    // Fungsi untuk menyimpan persetujuan cookie
     const handleSaveConsent = (type) => {
         let consentValue = type === 'all' ? 'all_granted' : (allowAnalytics ? 'custom_analytics' : 'essential_only');
         
         const newConsentCookie = GoogleCookieFactory.createCookie("preference", "COOKIE_CONSENT", consentValue);
         manager.save(newConsentCookie);
         
-        // 🌟 JIKA USER MENYETUJUI SEMUA ATAU MENGIZINKAN ANALITIK/PREFERENSI, MINTA LOKASI
-        if (type === 'all' || allowAnalytics) {
-            fetchLocationAndSaveCookie();
-        }
+        if (type === 'all' || allowAnalytics) { fetchLocationAndSaveCookie(); }
         
         setShowCookieModal(false);
     };
 
     const containerStyle = {
-        backgroundColor: HappyHuesTheme.background,
+        backgroundColor: "white", 
         minHeight: '100vh',
         color: HappyHuesTheme.headline,
         fontFamily: 'system-ui, sans-serif',
@@ -108,7 +95,6 @@ const LandingPage = () => {
 
     return (
         <div style={containerStyle}>
-            {/* --- HERO SECTION --- */}
             <header style={heroSectionStyle}>
                 <h1 style={{ 
                     fontSize: '4rem', 
@@ -196,8 +182,6 @@ const LandingPage = () => {
             }}>
                 <p>© 2026 SmartSchool Project. Build with Passion.</p>
             </footer>
-
-            {/* --- MODAL COOKIE CONSENT --- */}
             <ModalCustom
                 isOpen={showCookieModal}
                 onClose={() => setShowCookieModal(false)}

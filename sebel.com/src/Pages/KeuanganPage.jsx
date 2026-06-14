@@ -428,7 +428,6 @@ const SectionTabungan = ({ isGuru, listTabungan, setListTabungan, riwayatTabunga
 
     return (
         <div style={{ display: "flex", gap: 20, flexWrap: "wrap", alignItems: "flex-start" }}>
-            {/* Panel Kiri: Daftar Siswa */}
             <div style={{
                 width: 240, flexShrink: 0,
                 background: "#f8fafc", borderRadius: 12,
@@ -462,7 +461,6 @@ const SectionTabungan = ({ isGuru, listTabungan, setListTabungan, riwayatTabunga
                 )}
             </div>
 
-            {/* Panel Kanan: Detail Tabungan */}
             <div style={{ flex: 1, minWidth: 280 }}>
                 {!selected ? (
                     <div style={{
@@ -512,18 +510,13 @@ const SectionTabungan = ({ isGuru, listTabungan, setListTabungan, riwayatTabunga
     );
 };
 
-// ─── Main Page ───────────────────────────────────────────────────────────────
-
 const KeuanganPage = () => {
     const { role } = useParams();
     const navigate = useNavigate();
     const [activeTab, setActiveTab] = useState("kas");
-
-    // State Utama Penampung Data Dummy agar Perubahan Nilai Bersifat Reaktif
     const [kasData, setKasData] = useState(DUMMY_KAS_AWAL);
     const [listTabungan, setListTabungan] = useState(DUMMY_TABUNGAN_AWAL);
     const [riwayatTabungan, setRiwayatTabungan] = useState(DUMMY_RIWAYAT_TABUNGAN);
-
     const [isGuru, setIsGuru] = useState(false);
     const [loadInit, setLoadInit] = useState(true);
 
@@ -532,7 +525,7 @@ const KeuanganPage = () => {
             navigate("/", { replace: true });
             return;
         }
-        // Pasang role berdasarkan parameter URL langsung secara dummy
+
         setIsGuru(role === "guru");
         setLoadInit(false);
     }, [role, navigate]);

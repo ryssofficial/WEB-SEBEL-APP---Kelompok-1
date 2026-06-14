@@ -1,8 +1,6 @@
-// backend/db.js
-import pg from 'pg'; // Mengimpor pustaka pg
-import 'dotenv/config'; // Memastikan variabel lingkungan .env langsung dimuat
+import pg from 'pg';
+import 'dotenv/config';
 
-// Membuat satu instance Pool koneksi global
 const pool = new pg.Pool({
     user: process.env.DB_USER,
     host: process.env.DB_HOST,
@@ -11,7 +9,4 @@ const pool = new pg.Pool({
     port: process.env.DB_PORT,
 });
 
-// Mengekspor metode query secara langsung agar bisa dipakai oleh QueryBuilder/BaseModel
-export default {
-    query: (text, params) => pool.query(text, params),
-};
+export default { query: (text, params) => pool.query(text, params), };

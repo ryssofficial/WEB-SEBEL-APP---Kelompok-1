@@ -9,8 +9,6 @@
 // ──────────────────────────────────────────────
 /**
  * JadwalBuilder membangun satu entri jadwal secara bertahap (fluent API).
- *
- * Contoh pemakaian:
  *   const jadwal = new JadwalBuilder()
  *     .setHari('Senin')
  *     .setMapel('Matematika')
