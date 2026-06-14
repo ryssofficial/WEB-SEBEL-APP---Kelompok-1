@@ -1,6 +1,6 @@
 import BaseController from "./BaseController.js";
 import AdminModel from "../Models/SVA/AdminModel.js";
-import { sendError, sendNotFound, sendResponse } from "../Utils/Response.js"; // 🔥 Pastikan sendResponse di-import
+import { sendError, sendNotFound, sendResponse } from "../Utils/Response.js";
 import HashCrypt from "../Utils/Bcrypt.js";
 import jwt from "jsonwebtoken";
 
@@ -13,7 +13,6 @@ class adminController extends BaseController{
         await this.execute(res, async () => { 
             const { email, password } = req.body;
             
-            // 🔥 PERBAIKAN 1: Variabel disesuaikan agar tidak 'ReferenceError'
             if(!email || !password) return sendNotFound(res, "Data Kosong");
             
             try{
@@ -34,9 +33,7 @@ class adminController extends BaseController{
                     return sendError(res, 401, "Akun belum memiliki password.");
                 }
 
-                console.log(`[Debug] Hash dari DB: ${passwordHash}`);
                 
-                // 🔥 PERBAIKAN 2: Menggunakan passwordAdmin (bukan password)
                 const crypt = new HashCrypt(passwordHash);
                 const isPasswordValid = await crypt.comparing(password);
     
@@ -60,10 +57,29 @@ class adminController extends BaseController{
                     user: jwtPayload
                 });
             } catch(err){ 
-                console.error(err); // Agar mempermudah melihat log jika ada error database
+                console.error(err);
                 sendError(res, 500, 'Server Gagal Mengeksekusi Kode'); 
             }
         });
+    }
+
+    logout = async (req, res) => {
+        console.log(`Data Masuk: ${req.body}`);
+
+        await this.execute(res, async () => {
+            const { email, password } = req.body;
+
+            if( !email || !password ){ return sendNotFound(res, "Data Kosong"); }
+
+            try{
+                const admin = await this.model.query()
+                                    .where('Admin.identity', "=" , email)
+                                    .first();
+
+            } catch (error){
+                sendError(res, 500, "Terjadi kesalahan pada server");
+            }
+        })
     }
 }
 

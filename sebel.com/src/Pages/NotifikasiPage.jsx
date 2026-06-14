@@ -158,9 +158,6 @@ const NotifikasiPage = () => {
         try {
             const data = await NotifikasiResponse.getAll();
             const finalData = Array.isArray(data) ? data : data?.data ?? [];
-            
-            // Log ini berguna untuk memantau data asli dari backend di console browser
-            console.log("ISI DATA NOTIFIKASI SAYA:", finalData);
             setNotifikasi(finalData);
         } catch (err) {
             setError("Gagal memuat notifikasi. Silakan coba lagi.");

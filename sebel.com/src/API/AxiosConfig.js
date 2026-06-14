@@ -42,8 +42,6 @@ export const AxiosConfig = {
             const response = await instance.post(targetUrl, param);
             return response.data;
         } catch (error) {
-            // FIX: lempar error object axios apa adanya supaya error.response.data.message
-            // bisa diakses di LoginPage dan controller error lainnya
             throw error;
         }
     },

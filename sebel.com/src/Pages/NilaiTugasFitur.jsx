@@ -9,9 +9,6 @@ import {
 import { DeleteButton } from "../Components/Button/DeleteButton";
 import { NilaiTugasResponse } from "../API/MuadzResponse/NilaiTugasResponse";
 
-// ─────────────────────────────────────────────
-// Helpers
-// ─────────────────────────────────────────────
 const formatTanggal = (isoString) => {
     if (!isoString) return "-";
     return new Date(isoString).toLocaleString("id-ID", {
@@ -29,9 +26,6 @@ const getNilaiBadgeStyle = (nilai) => {
     return { bg: "#ffd6d6", color: "#8b0000" };
 };
 
-// ─────────────────────────────────────────────
-// Loading & Empty
-// ─────────────────────────────────────────────
 const LoadingSkeleton = () => (
     <div>
         {[1, 2, 3].map((i) => (
@@ -74,12 +68,8 @@ const EmptyState = ({ message = "Tidak ada data." }) => (
     </div>
 );
 
-// ─────────────────────────────────────────────
-// Komponen: Baris nilai tugas (Guru)
-// ─────────────────────────────────────────────
 const NilaiTugasItem = ({ item, onDelete, onEditNilai }) => {
     const badge = getNilaiBadgeStyle(item.nilai);
-    // FIX: Setelah nestRelation + CaseConverter, nama siswa ada di item.siswa.namaSiswa
     const namaSiswa = item.siswa?.namaSiswa ?? item.namaSiswa ?? "-";
     const nisSiswa  = item.siswa?.nisSiswa  ?? item.nisSiswa  ?? "-";
 
@@ -97,7 +87,6 @@ const NilaiTugasItem = ({ item, onDelete, onEditNilai }) => {
                 transition: "all 0.15s ease-in-out",
             }}
         >
-            {/* Badge Nilai */}
             <div
                 style={{
                     minWidth: "60px",
@@ -117,7 +106,6 @@ const NilaiTugasItem = ({ item, onDelete, onEditNilai }) => {
                 {item.nilai ?? "-"}
             </div>
 
-            {/* Konten */}
             <div style={{ flex: 1, minWidth: 0 }}>
                 <div
                     style={{
@@ -168,7 +156,6 @@ const NilaiTugasItem = ({ item, onDelete, onEditNilai }) => {
                 </div>
             </div>
 
-            {/* Aksi Guru */}
             <div
                 style={{
                     display: "flex",

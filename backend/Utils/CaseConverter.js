@@ -1,4 +1,3 @@
-// src/utils/CaseConverter.js
 export const CaseConverter = {
     toCamelCase: (str) => {
         return str.replace(/_([a-z])/g, (g) => g[1].toUpperCase());
@@ -8,9 +7,6 @@ export const CaseConverter = {
         return str.replace(/[A-Z]/g, (letter) => `_${letter.toLowerCase()}`);
     },
 
-    /**
-     * Konversi semua kunci dalam objek/array
-     */
     transformKeys: (data, converter) => {
         if (typeof data !== 'object' || data === null) return data;
         
