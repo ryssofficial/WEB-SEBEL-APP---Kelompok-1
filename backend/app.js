@@ -8,6 +8,7 @@ import cors from "cors";
 import dotenv from "dotenv";
 import { sendNotFound } from "./Utils/Response.js";
 import RouteControl from "./Routes/RouteControl.js";
+import { OAuth2Client } from "google-auth-library";
 
 dotenv.config();
 const app = express();
@@ -25,8 +26,7 @@ app.use(cors({
     methods: ['GET', 'POST', 'PUT', 'DELETE'],
     allowedHeaders: [
         'Content-Type', 'Authorization', 
-        'Authorization',
-        'ngrok-skip-browser-warning'
+        'Authorization', 
     ]
 }));
 
