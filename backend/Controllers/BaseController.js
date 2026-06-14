@@ -1,6 +1,6 @@
 import jwt from "jsonwebtoken";
 import { sendResponse, sendError, sendNotFound } from "../Utils/Response.js";
-import LogDataModel from "../models/System/LogDataModel.js"; // Diperlukan untuk otomasi audit log jika diaktifkan
+import LogDataModel from "../models/System/LogDataModel.js";
 
 /**
  * Middleware Autentikasi Token JWT
@@ -20,7 +20,7 @@ export const authenticateToken = (req, res, next) => {
 };
 
 /**
- * 🌟 DESIGN PATTERN: Template Method Pattern
+ * Template Method Pattern
  * Base class untuk standarisasi alur kerja semua Controller di Backend.
  */
 export default class BaseController {
@@ -39,35 +39,28 @@ export default class BaseController {
      */
     async execute(res, businessLogicFn) {
         try {
-            // Jalankan logika bisnis utama yang dikirim dari subclass
             await businessLogicFn();
         } catch (error) {
-            // Standarisasi penanganan error global di level controller
             console.error(`[Controller Error]:`, error);
             return sendError(res, 500, "Terjadi kesalahan internal pada server", error);
         }
     }
 
     /**
-     * 🛡️ Helper: Mendapatkan IP Address Client untuk Keperluan Audit Log
+     * Mendapatkan IP Address Client untuk Keperluan Audit Log
      */
-    getIpAddress(req) {
-        return req.headers['x-forwarded-for'] || req.socket.remoteAddress || "127.0.0.1";
-    }
+    getIpAddress(req) { return req.headers['x-forwarded-for'] || req.socket.remoteAddress || "127.0.0.1"; }
 
     /**
-     * 🌟 Fungsi Default: Mendapatkan Semua Data (Dengan Auto-Paginasi & Whitelist Input)
+     * Mendapatkan Semua Data (Dengan Auto-Paginasi & Whitelist Input)
      */
     index = async (req, res) => {
         await this.execute(res, async () => {
             if (!this.model) return sendError(res, 500, "Model pendukung tidak didefinisikan.");
 
-            // Ambil parameter paginasi dari query string frontend
             const page = parseInt(req.query.page) || 1;
             const limit = parseInt(req.query.limit) || 10;
             const offset = (page - 1) * limit;
-
-            // Eksekusi kueri dinamis via QueryBuilder yang aman
             const data = await this.model.query()
                 .limit(limit)
                 .offset(offset)
@@ -82,7 +75,7 @@ export default class BaseController {
     }
 
     /**
-     * 🌟 Fungsi Default: Mendapatkan Data Tunggal Berdasarkan Primary Key
+     * Mendapatkan Data Tunggal Berdasarkan Primary Key
      */
     show = async (req, res) => {
         await this.execute(res, async () => {
@@ -93,25 +86,20 @@ export default class BaseController {
                 .where(this.model.primaryKey, '=', id)
                 .first();
 
-            if (!data) {
-                return sendNotFound(res, `Data dengan ID ${id} tidak ditemukan`);
-            }
+            if (!data) { return sendNotFound(res, `Data dengan ID ${id} tidak ditemukan`); }
 
             return sendResponse(res, 200, "Data berhasil ditemukan", data);
         });
     }
 
     /**
-     * 🌟 Fungsi Default: Menyimpan Data Baru (Otomatis Tersaring Keamanan Whitelist)
+     * Menyimpan Data Baru (Otomatis Tersaring Keamanan Whitelist)
      */
     store = async (req, res) => {
         await this.execute(res, async () => {
             if (!this.model) return sendError(res, 500, "Model pendukung tidak didefinisikan.");
 
-            // req.body dikirim langsung; fungsi #sanitizeData pada BaseModel akan menyaring kolom luar
             const dataBaru = await this.model.create(req.body);
-
-            // 🔒 Otomatisasi Security Log jika diaktifkan (Sesuai tabel log_data skema Anda)
             await LogDataModel.create({
                 idGuru: req.user?.role === 'guru' ? req.user.id : null,
                 idSiswa: req.user?.role === 'siswa' ? req.user.id : null,
@@ -124,7 +112,7 @@ export default class BaseController {
     }
 
     /**
-     * 🌟 Fungsi Default: Mengubah Data (Otomatis Tersaring Keamanan Whitelist)
+     * Mengubah Data (Otomatis Tersaring Keamanan Whitelist)
      */
     update = async (req, res) => {
         await this.execute(res, async () => {
@@ -133,16 +121,14 @@ export default class BaseController {
             const { id } = req.params;
             const dataUpdated = await this.model.update(id, req.body);
 
-            if (!dataUpdated) {
-                return sendNotFound(res, `Gagal memperbarui, data tidak ditemukan`);
-            }
+            if (!dataUpdated) { return sendNotFound(res, `Gagal memperbarui, data tidak ditemukan`); }
 
             return sendResponse(res, 200, "Data berhasil diperbarui", dataUpdated);
         });
     }
 
     /**
-     * 🌟 Fungsi Default: Menghapus Data
+     * Menghapus Data
      */
     destroy = async (req, res) => {
         await this.execute(res, async () => {
@@ -151,9 +137,7 @@ export default class BaseController {
             const { id } = req.params;
             const isDeleted = await this.model.delete(id);
 
-            if (!isDeleted) {
-                return sendNotFound(res, `Gagal menghapus, data tidak ditemukan`);
-            }
+            if (!isDeleted) { return sendNotFound(res, `Gagal menghapus, data tidak ditemukan`); }
 
             return sendResponse(res, 200, "Data berhasil dihapus");
         });

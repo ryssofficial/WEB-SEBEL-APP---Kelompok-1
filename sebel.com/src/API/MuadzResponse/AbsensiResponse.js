@@ -1,15 +1,10 @@
 import { AxiosConfig } from "../AxiosConfig";
 
-// ─────────────────────────────────────────────
-// DB constraint: status_kehadiran = character(1)
-// hanya terima: 'H' | 'I' | 'S' | 'A'
-// ─────────────────────────────────────────────
 const STATUS_TO_CHAR = {
     hadir: "H", h: "H",
     izin:  "I", i: "I",
     sakit: "S", s: "S",
-    alpha: "A", alpa: "A", a: "A",
-    // sudah char
+    alpha: "A", alpa: "A", a: "A", 
     H: "H", I: "I", S: "S", A: "A",
 };
 
@@ -18,10 +13,6 @@ export const toStatusChar = (status) =>
     STATUS_TO_CHAR[(status ?? "").trim()] ??
     null;
 
-// ─────────────────────────────────────────────
-// Normalizer: snake_case API → camelCase UI
-// sekaligus expand char status ke label lengkap
-// ─────────────────────────────────────────────
 const CHAR_TO_LABEL = { H: "Hadir", I: "Izin", S: "Sakit", A: "Alpha" };
 
 export const normalizeAbsensiItem = (item) => {
@@ -36,8 +27,8 @@ export const normalizeAbsensiItem = (item) => {
         nisSiswa:         item.nisSiswa         ?? item.nis_siswa         ?? "-",
         tugasKe:          item.tugasKe          ?? item.tugas_ke,
         tanggalPenilaian: item.tanggalPenilaian ?? item.tanggal_penilaian,
-        statusKehadiran:  labelStatus,  // selalu label lengkap untuk UI
-        statusChar:       charStatus,   // karakter asli dari DB
+        statusKehadiran:  labelStatus, 
+        statusChar:       charStatus,  
     };
 };
 
@@ -72,8 +63,6 @@ export const AbsensiResponse = {
         }
     },
 
-    // payload dari UI pakai label (Hadir/Izin/Sakit/Alpha)
-    // fungsi ini konversi ke char (H/I/S/A) sebelum kirim ke DB
     create: async (payload) => {
         const charStatus = toStatusChar(payload.status_kehadiran);
         if (!charStatus) {

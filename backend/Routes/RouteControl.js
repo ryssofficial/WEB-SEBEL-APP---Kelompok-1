@@ -9,12 +9,6 @@ import PresensiRoute from "./Muadz/PresensiRoute.js"
 import KeuanganRouter from "./Eriska/KeuanganRoutes.js"
 import NilaiTugasRoute from "./Muadz/NilaiTugasRoute.js";
 
-/**
- * CONTOH: TINGGAL IMPORT AJA
- * import siswaRoutes from "./Eriska/siswaRoutes.js";
- * import keuanganRoutes from "./Muadz/keuanganRoutes.js"; - Contoh anggota lain
- */
-
 const BaseRouter = express.Router();
 
 /**
