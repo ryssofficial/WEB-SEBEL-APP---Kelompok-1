@@ -17,11 +17,15 @@ const AbsensiFiturWrapper = () => {
     const roleProp = role ? role.charAt(0).toUpperCase() + role.slice(1) : 'Siswa';
     return <AbsensiFitur role={roleProp} />;
 };
-// Tambah/update wrapper untuk NilaiTugas
+
 const NilaiTugasFiturWrapper = () => {
     const { role } = useParams();
     const roleProp = role ? role.charAt(0).toUpperCase() + role.slice(1) : 'Siswa';
-    return <NilaiTugasFitur role={roleProp} />;
+    const userData = JSON.parse(localStorage.getItem('user') || '{}');
+    const idSiswa   = userData?.id ?? null;
+    const idAnggota = userData?.idAnggota ?? null;
+
+    return <NilaiTugasFitur role={roleProp} idSiswa={idSiswa} idAnggota={idAnggota} />;
 };
 
 

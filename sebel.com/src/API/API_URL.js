@@ -1,1 +1,1 @@
-export const API_URL = "https://sprinkler-footpath-emit.ngrok-free.dev/api";
+export const API_URL = "http://localhost:5000/api";

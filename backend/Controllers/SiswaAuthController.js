@@ -4,6 +4,9 @@ import SiswaModel from "../Models/SVA/SiswaModel.js";
 import HashCrypt from "../Utils/Bcrypt.js"; // Memuat utilitas enkripsi password Anda
 import jwt from "jsonwebtoken";
 import { sendResponse, sendError } from "../Utils/Response.js";
+import AnggotaRombelModel from '../Models/Kelas/AnggotaRombelModel.js';
+
+
 
 class SiswaAuthController extends BaseController {
     constructor() {
@@ -52,11 +55,17 @@ class SiswaAuthController extends BaseController {
             
             console.log('[System] Verifikasi Berhasil! Membuat token...');
 
+            const idSiswa = siswa.idSiswa || siswa.id_siswa;
+            const anggota = await AnggotaRombelModel.query()
+                .where('id_siswa', '=', idSiswa)
+                .first();
+
             const jwtPayload = {
-                id: siswa.idSiswa || siswa.id_siswa, 
-                nis: siswa.nisSiswa || siswa.nis_siswa,
-                nama: siswa.namaSiswa || siswa.nama_siswa,
-                role: "siswa"
+                id:         idSiswa,
+                nis:        siswa.nisSiswa  || siswa.nis_siswa,
+                nama:       siswa.namaSiswa || siswa.nama_siswa,
+                role:       "siswa",
+                idAnggota:  anggota?.idAnggota ?? anggota?.id_anggota ?? null,
             };
 
             const token = jwt.sign(jwtPayload, process.env.JWT_SECRET, { expiresIn: "8h" });
