@@ -8,8 +8,7 @@ const manager = new CookieManager();
 export const instance = axios.create({
     baseURL: API_URL,
     headers: {
-        'Content-Type': 'application/json', 
-        'ngrok-skip-browser-warning': 'true'
+        'Content-Type': 'application/json'  
     }
 });
 
@@ -42,8 +41,6 @@ export const AxiosConfig = {
             const response = await instance.post(targetUrl, param);
             return response.data;
         } catch (error) {
-            // FIX: lempar error object axios apa adanya supaya error.response.data.message
-            // bisa diakses di LoginPage dan controller error lainnya
             throw error;
         }
     },

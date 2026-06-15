@@ -1,7 +1,7 @@
 // frontend/services/LoginResponse.js
-import { AxiosConfig } from "../AxiosConfig"; // Sesuaikan jika tanpa kurung kurawal berdasarkan file Anda
+import { AxiosConfig } from "../AxiosConfig";
 
-const ENDPOINT_PATH = "/auth"; // Menggunakan grup path auth agar lebih rapi secara arsitektur
+const ENDPOINT_PATH = "/auth";
 
 export const LoginResponse = {
     /**
@@ -11,7 +11,6 @@ export const LoginResponse = {
      * @returns {Promise<Object>} Respons data user dan token dari server
      */
     siswaLogin: async (nis, password) => {
-        // Mengirim data auth ke endpoint: baseURL + "/auth/login/siswa"
         return await AxiosConfig.post(`${ENDPOINT_PATH}/login/siswa`, { 
             identifier: nis, 
             password: password 
@@ -25,7 +24,6 @@ export const LoginResponse = {
      * @returns {Promise<Object>} Respons data user dan token dari server
      */
     guruLogin: async (email, password) => {
-        // Mengirim data auth ke endpoint: baseURL + "/auth/login/guru"
         return await AxiosConfig.post(`${ENDPOINT_PATH}/login/guru`, { 
             identifier: email, 
             password: password 

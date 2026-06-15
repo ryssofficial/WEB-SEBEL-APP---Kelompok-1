@@ -52,12 +52,8 @@ const LocalStyledButton = ({ children, type, style, onClick, disabled }) => (
 export default function ProfileData() {
   const { role } = useParams();
   const currentRole = role || "guru"; 
-
-  // Reset view kembali ke 'display' setiap kali user pindah role (dari guru ke siswa / sebaliknya)
   const [currentView, setCurrentView] = useState("display"); 
   const [loading, setLoading] = useState(true);
-
-  // Master State Data Profil Utama
   const [profile, setProfile] = useState({
     fullName: "",
     alamat: "",
@@ -65,7 +61,6 @@ export default function ProfileData() {
     email: "",
   });
 
-  // State temporary khusus form input agar tidak mengacaukan master state sebelum disave
   const [tempProfile, setTempProfile] = useState({
     fullName: "",
     alamat: "",
@@ -79,12 +74,10 @@ export default function ProfileData() {
     confirmPassword: "",
   });
 
-  // ==================== GET DATA PROFILE ====================
   useEffect(() => {
     const fetchProfileData = async () => {
       try {
         setLoading(true);
-        // Pastikan view balik ke display ringkasan data saat ganti halaman role
         setCurrentView("display"); 
         
         const response = await ProfileDataResponse.getProfile(currentRole);
@@ -97,16 +90,14 @@ export default function ProfileData() {
             email: response.data.email || "",
           };
           setProfile(fetchedData);
-          setTempProfile(fetchedData); // Isi data temp dengan data role yang baru di-load
+          setTempProfile(fetchedData);
         } else {
-          // Jika data kosong/belum diisi di backend, reset ke string kosong khusus role ini
           const emptyData = { fullName: "", alamat: "", ttl: "", email: "" };
           setProfile(emptyData);
           setTempProfile(emptyData);
         }
       } catch (error) {
         console.error(`Gagal memuat data profil ${currentRole}:`, error);
-        // Fallback jika error/belum ada database agar tetap bisa dicoba tampilannya
         const fallbackData = { fullName: "", alamat: "", ttl: "", email: "" };
         setProfile(fallbackData);
         setTempProfile(fallbackData);
@@ -116,9 +107,8 @@ export default function ProfileData() {
     };
 
     fetchProfileData();
-    // Bersihkan form ganti password setiap kali pindah role halaman
     setPasswordData({ currentPassword: "", newPassword: "", confirmPassword: "" });
-  }, [currentRole]); // Menggunakan [currentRole] sebagai dependency wajib!
+  }, [currentRole]);
 
   const handleProfileChange = (e) => {
     setTempProfile({ ...tempProfile, [e.target.name]: e.target.value });
@@ -128,7 +118,6 @@ export default function ProfileData() {
     setPasswordData({ ...passwordData, [e.target.name]: e.target.value });
   };
 
-  // ==================== UPDATE PROFILE ====================
   const handleProfileSubmit = async (e) => {
     e.preventDefault();
     try {
@@ -141,7 +130,6 @@ export default function ProfileData() {
     }
   };
 
-  // ==================== UPDATE PASSWORD ====================
   const handlePasswordSubmit = async (e) => {
     e.preventDefault();
     if (passwordData.newPassword !== passwordData.confirmPassword) {
@@ -217,7 +205,6 @@ export default function ProfileData() {
           </div>
         ) : (
           <>
-            {/* ==================== 1. MODE TAMPIL DATA UTAMA ==================== */}
             {currentView === "display" && (
               <LocalStyledCard>
                 <div style={{ backgroundColor: HappyHuesTheme.highlight, padding: "12px", border: `3px solid ${HappyHuesTheme.stroke}`, boxShadow: `3px 3px 0px ${HappyHuesTheme.stroke}`, fontWeight: "900", marginBottom: "24px", borderRadius: "6px", textAlign: "center", textTransform: "uppercase" }}>

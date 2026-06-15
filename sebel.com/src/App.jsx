@@ -11,7 +11,6 @@ import NilaiTugasFitur from './Pages/NilaiTugasFitur';
 
 const JadwalPageWrapper = () => { const { role } = useParams(); const roleProp = role ? role.charAt(0).toUpperCase() + role.slice(1) : 'Siswa'; return <JadwalPage role={roleProp} />; };
 const KeuanganPageWrapper = () => { const {role} = useParams(); const roleProp = role.charAt(0).toUpperCase() + role.slice(1); return <KeuanganPage role={roleProp} />; };
-// Update AbsensiFiturWrapper (sudah ada, tapi pastikan sama)
 const AbsensiFiturWrapper = () => {
     const { role } = useParams();
     const roleProp = role ? role.charAt(0).toUpperCase() + role.slice(1) : 'Siswa';

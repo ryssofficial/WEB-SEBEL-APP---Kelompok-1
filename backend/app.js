@@ -6,11 +6,9 @@ import express from "express";
 import "./Utils/GenerateJWT.js";
 import cors from "cors";
 import dotenv from "dotenv";
-import { OAuth2Client } from "google-auth-library";
-import jwt from "jsonwebtoken";
 import { sendNotFound } from "./Utils/Response.js";
 import RouteControl from "./Routes/RouteControl.js";
-import bcrypt from 'bcrypt';
+import { OAuth2Client } from "google-auth-library";
 
 dotenv.config();
 const app = express();
@@ -18,21 +16,17 @@ const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 const JWT_SECRET = process.env.JWT_SECRET;
 const PORT = process.env.PORT || 5000; 
 
-const whitelist = ['http://localhost:5173'];
+export const whitelist = process.env.WHITELIST_URLS ? process.env.WHITELIST_URLS.split(',') : [];
 
 app.use(cors({
     origin: function (origin, callback) {
-        if (whitelist.indexOf(origin) !== -1 || !origin) {
-        callback(null, true); 
-        } else {
-        callback(new Error('Akses ditolak oleh CORS! Domain Anda tidak terdaftar.')); // Ditolak
-        }
+        if (whitelist.indexOf(origin) !== -1 || !origin) { callback(null, true); }
+        else { callback(new Error('Akses ditolak oleh CORS! Domain Anda tidak terdaftar.')); }
     },
     methods: ['GET', 'POST', 'PUT', 'DELETE'],
     allowedHeaders: [
         'Content-Type', 'Authorization', 
-        'Authorization',
-        'ngrok-skip-browser-warning'
+        'Authorization', 
     ]
 }));
 
@@ -47,7 +41,5 @@ app.listen(PORT, '0.0.0.0', () => {
     console.log(`== 🔓 JWT TOKEN SIAP DIGUNAKAN                             ==`);
     console.log(`=============================================================`);
 });
-
-
 
 app.get('/', (req, res) => { res.send('Backend API SEBEL berjalan dengan baik!'); });

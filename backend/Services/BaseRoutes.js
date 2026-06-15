@@ -1,9 +1,7 @@
-// backend/Services/BaseRoutes.js
 import express from 'express';
-import { AuthToken } from './AuthToken.js'; // Pastikan ekstensi .js ditambahkan jika menggunakan ESM
+import { AuthToken } from './AuthToken.js';
 
 export default class BaseRoutes {
-    // 1. Deklarasi bidang privat yang legal di dalam class
     #method;
     #route;
     #handler;
@@ -18,13 +16,10 @@ export default class BaseRoutes {
     constructor(method, route, handler, expressRouter) {
         this.#method = method.toLowerCase();
         this.#route = route;
-        this.#handler = handler; // Menyimpan fungsi controller ke properti privat #handler
+        this.#handler = handler;
         this.#expressRouter = expressRouter;
 
-        // Mengembalikan fungsi closure agar instance bisa dipanggil langsung sebagai fungsi: rute(expressRouter)
-        return (router) => { 
-            return this.#execute(router); 
-        };
+        return (router) => { return this.#execute(router); };
     }
 
     /**
@@ -32,13 +27,12 @@ export default class BaseRoutes {
      * @param {Object} router - Instance router dari Express luar
      */
     #execute(router) {
-        // Deteksi otomatis apakah rute ini boleh diakses tanpa token (Public Route)
         const isPublicRoute = this.#route.includes('/login') || this.#route.includes('/register');
 
         switch (this.#method) {
             case "post": 
                 if (isPublicRoute) {
-                    return router.post(this.#route, this.#handler); // 🌟 FIX: Gunakan #handler, bukan #data
+                    return router.post(this.#route, this.#handler);
                 } else {
                     return router.post(this.#route, AuthToken, this.#handler);
                 }

@@ -15,8 +15,6 @@ export default class QueryBuilder {
         this.queryWheres = [];
         this.params = [];
         this.paramIndex = 1;
-        
-        // 🌟 SOLUSI 4: Paginasi
         this.queryLimit = null;
         this.queryOffset = null;
     }
@@ -38,7 +36,6 @@ export default class QueryBuilder {
         return this;
     }
 
-    // Menentukan batas data
     limit(num) {
         this.queryLimit = num;
         return this;
@@ -48,7 +45,7 @@ export default class QueryBuilder {
         this.queryOrderBy = `ORDER BY ${column} ${direction}`;
         return this;
     }
-    // Menentukan titik mulai data
+
     offset(num) {
         this.queryOffset = num;
         return this;
@@ -59,14 +56,11 @@ export default class QueryBuilder {
         
         if (this.queryJoins.length > 0) sql += ` ${this.queryJoins.join(' ')}`;
         if (this.queryWheres.length > 0) sql += ` WHERE ${this.queryWheres.join(' AND ')}`;
-        
-        // Menerapkan paginasi
         if (this.queryOrderBy) sql += ` ${this.queryOrderBy}`;
         if (this.queryLimit) sql += ` LIMIT ${this.queryLimit}`;
         if (this.queryOffset) sql += ` OFFSET ${this.queryOffset}`;
 
         try {
-            // Menggunakan dbClient (Bisa pool biasa, atau client transaksi)
             const result = await this.dbClient.query(sql, this.params);
             return CaseConverter.transformKeys(result.rows, CaseConverter.toCamelCase);
         } catch (error) {
@@ -75,13 +69,13 @@ export default class QueryBuilder {
     }
 
     async first() {
-        this.limit(1); // Optimasi performa database
+        this.limit(1);
         const results = await this.get();
         return results.length > 0 ? results[0] : null;
     }
 
     /**
-     * 🌟 SOLUSI 2: Nested Relation Mapper
+     * Nested Relation Mapper
      * Mengubah data flat hasil JOIN menjadi object bersarang
      * @param {Array} rows - Hasil dari .get()
      * @param {string} prefix - Awalan kolom, contoh: "guru"

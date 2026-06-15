@@ -78,10 +78,9 @@ export default function LoginPage() {
             localStorage.setItem("user", JSON.stringify(user));
             setNotification({ type: 'success', title: 'Login Berhasil', message: `Selamat datang, ${isSiswa ? 'Siswa' : 'Guru'}!` });
             setTimeout(() => { navigate(isSiswa ? '/siswa/dashboard' : '/guru/dashboard'); }, 1000);
-        } catch (error) { // 🌟 Samakan namanya menjadi 'error'
-            console.error("Respon Error dari Server:", error); // Sekarang aman dicetak
+        } catch (error) {
+            console.error("Respon Error dari Server:", error);
 
-            // Ambil pesan kustom yang dikirim oleh backend
             const pesanDariBackend = error.response?.data?.message;
             
             setNotification({ 
