@@ -74,3 +74,10 @@ build/
 backend/.env
 frontend/.env
 frontend/sebel.com/.env
+
+backend/storage/*
+!backend/storage/uploads/
+backend/storage/uploads/*
+!backend/storage/uploads/tugas/
+backend/storage/uploads/tugas/*
+!backend/storage/uploads/tugas/.gitkeep

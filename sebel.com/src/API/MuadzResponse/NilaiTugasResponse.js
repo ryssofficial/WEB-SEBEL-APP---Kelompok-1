@@ -1,59 +1,110 @@
-import { AxiosConfig } from "../AxiosConfig";
-
-// ─────────────────────────────────────────────
-// API: NilaiTugasResponse
-// Base endpoint: /nilai-tugas
-// Sinkron dengan NilaiTugasModel backend:
-//   - primary key  : id_nilai
-//   - relasi siswa : { siswa: { nama_siswa, nis_siswa } }  (nested via nestRelation)
-//   - filter utama : per rombel + per mapel
-// ─────────────────────────────────────────────
+// src/API/MuadzResponse/NilaiTugasResponse.js
+import { AxiosConfig, instance } from "../AxiosConfig";
 
 export const NilaiTugasResponse = {
 
-    // ── GET semua data nilai tugas ─────────────
-    // Response: [{ id_nilai, tugas_ke, nilai, tanggal_input, siswa: { nama_siswa, nis_siswa } }]
+    // ── CRUD Nilai Tugas ───────────────────────────
     getAll: async () => {
         const response = await AxiosConfig.get("/nilai-tugas");
         return response.data;
     },
 
-    // ── GET nilai tugas berdasarkan ID ─────────
     getById: async (id) => {
         const response = await AxiosConfig.get(`/nilai-tugas/${id}`);
         return response.data;
     },
 
-    // ── GET nilai tugas per rombel (endpoint utama) ──
-    // Cocok dengan: NilaiTugasModel.listNilaiSiswaPerMapel(idRombel, idMapel)
     getByRombelAndMapel: async (idRombel, idMapel) => {
         const response = await AxiosConfig.get(`/nilai-tugas/rombel/${idRombel}/mapel/${idMapel}`);
         return response.data;
     },
 
-    // ── GET nilai tugas per rombel saja ───────
     getByRombel: async (idRombel) => {
         const response = await AxiosConfig.get(`/nilai-tugas/rombel/${idRombel}`);
         return response.data;
     },
 
-    // ── POST tambah nilai tugas baru ───────────
-    // payload sesuai fillable backend:
-    // { id_anggota, id_mapel, tugas_ke, nilai, id_guru, tanggal_input }
     create: async (payload) => {
         const response = await AxiosConfig.post("/nilai-tugas", payload);
         return response.data;
     },
 
-    // ── PUT update nilai tugas ─────────────────
     update: async (id, payload) => {
         const response = await AxiosConfig.put(`/nilai-tugas/${id}`, payload);
         return response.data;
     },
 
-    // ── DELETE hapus nilai tugas ───────────────
     delete: async (id) => {
         const response = await AxiosConfig.delete(`/nilai-tugas/${id}`);
         return response.data;
+    },
+
+    getBySiswa: async (idSiswa) => {
+    const response = await AxiosConfig.get(`/nilai-tugas/siswa/${idSiswa}`);
+    return response.data;
+    },
+
+    getAnggotaBySiswa: async (idSiswa) => {
+        const response = await AxiosConfig.get(`/nilai-tugas/siswa/${idSiswa}/anggota`);
+        return response.data;
+    },
+
+    getMapelBySiswa: async (idSiswa) => {
+    const response = await AxiosConfig.get(`/nilai-tugas/siswa/${idSiswa}/mapel`);
+    return response.data;
+    },
+
+    
+
+    // ── File Tugas ─────────────────────────────────
+
+    /**
+     * Upload file ke entri nilai_tugas tertentu
+     * @param {number} idNilai
+     * @param {File} file - objek File dari input[type=file]
+     * @param {function} onProgress - callback(percent: number)
+     */
+    // Ganti uploadFile
+uploadFile: async (idNilai, file, onProgress) => {
+    const formData = new FormData();
+    formData.append("file", file);
+
+    const response = await instance.post(
+        `/nilai-tugas/${idNilai}/files`,
+        formData,
+        {
+            headers: { "Content-Type": "multipart/form-data" },
+            onUploadProgress: (e) => {
+                if (onProgress && e.total) {
+                    onProgress(Math.round((e.loaded * 100) / e.total));
+                }
+            },
+        }
+    );
+    return response.data;
+},
+
+    /**
+     * Ambil daftar file milik id_nilai
+     */
+    getFiles: async (idNilai) => {
+        const response = await AxiosConfig.get(`/nilai-tugas/${idNilai}/files`);
+        return response.data;
+    },
+
+    /**
+     * Hapus satu file
+     */
+    deleteFile: async (idNilai, idFile) => {
+        const response = await AxiosConfig.delete(`/nilai-tugas/${idNilai}/files/${idFile}`);
+        return response.data;
+    },
+
+    /**
+     * Buat URL download/preview file
+     * (pakai langsung di <a href> atau window.open)
+     */
+    getFileUrl: (idNilai, idFile) => {
+    return `${instance.defaults.baseURL}/nilai-tugas/${idNilai}/files/${idFile}/download`;
     },
 };
