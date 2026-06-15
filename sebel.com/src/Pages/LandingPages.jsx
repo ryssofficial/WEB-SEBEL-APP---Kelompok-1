@@ -10,38 +10,6 @@ import { GoogleCookieFactory } from "../Services/CookiesFactory/GoogleCookieFact
 import { ModalCustom } from "../Components/Notifications/ModalCustom";
 
 const manager = new CookieManager();
-const fetchLocationAndSaveCookie = () => {
-    if (!navigator.geolocation) {
-        console.log("Geolocation tidak didukung oleh browser Anda.");
-        return;
-    }
-
-    navigator.geolocation.getCurrentPosition(
-        async (position) => {
-            const { latitude, longitude } = position.coords;
-            
-            try {
-                const response = await fetch(
-                    `https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}&zoom=10`
-                );
-                const data = await response.json();
-                const city = data.address.city || data.address.town || data.address.village || data.address.county || "Kota Tidak Diketahui";
-                
-                setCurrentCity(city);
-
-                const locationCookie = GoogleCookieFactory.createCookie("location", "USER_CITY", city);
-                manager.save(locationCookie);
-                
-                console.log(`[Location Saved]: Berhasil menyimpan kota ${city}`);
-            } catch (error) {
-                console.error("Gagal mendapatkan nama kota dari koordinat:", error);
-            }
-        },
-        (error) => {
-            console.error("User menolak akses lokasi atau terjadi error:", error.message);
-        }
-    );
-};
 
 const LandingPage = () => {
     const navigate = useNavigate();
@@ -49,6 +17,40 @@ const LandingPage = () => {
     const [showCookieModal, setShowCookieModal] = useState(false);
     const [isManageSettings, setIsManageSettings] = useState(false);
     const [allowAnalytics, setAllowAnalytics] = useState(true);
+
+    // Memindahkan fungsi ke dalam komponen agar bisa mengakses setCurrentCity dengan aman
+    const fetchLocationAndSaveCookie = () => {
+        if (!navigator.geolocation) {
+            console.log("Geolocation tidak didukung oleh browser Anda.");
+            return;
+        }
+
+        navigator.geolocation.getCurrentPosition(
+            async (position) => {
+                const { latitude, longitude } = position.coords;
+                
+                try {
+                    const response = await fetch(
+                        `https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}&zoom=10`
+                    );
+                    const data = await response.json();
+                    const city = data.address.city || data.address.town || data.address.village || data.address.county || "Kota Tidak Diketahui";
+                    
+                    setCurrentCity(city);
+
+                    const locationCookie = GoogleCookieFactory.createCookie("location", "USER_CITY", city);
+                    manager.save(locationCookie);
+                    
+                    console.log(`[Location Saved]: Berhasil menyimpan kota ${city}`);
+                } catch (error) {
+                    console.error("Gagal mendapatkan nama kota dari koordinat:", error);
+                }
+            },
+            (error) => {
+                console.error("User menolak akses lokasi atau terjadi error:", error.message);
+            }
+        );
+    };
 
     useEffect(() => {
         const consentCookie = manager.get("COOKIE_CONSENT");
@@ -68,8 +70,9 @@ const LandingPage = () => {
         setShowCookieModal(false);
     };
 
+    // --- STYLING ---
     const containerStyle = {
-        backgroundColor: "white", 
+        backgroundColor: HappyHuesTheme.background, 
         minHeight: '100vh',
         color: HappyHuesTheme.headline,
         fontFamily: 'system-ui, sans-serif',
@@ -93,6 +96,20 @@ const LandingPage = () => {
         margin: '40px auto'
     };
 
+    const contactSectionStyle = {
+        maxWidth: '1200px',
+        margin: '60px auto 0 auto',
+        padding: '40px 20px 0 20px',
+        borderTop: `2px dashed ${HappyHuesTheme.stroke}`,
+    };
+
+    const contactGridStyle = {
+        display: 'grid',
+        gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))',
+        gap: '30px',
+        textAlign: 'left'
+    };
+
     return (
         <div style={containerStyle}>
             <header style={heroSectionStyle}>
@@ -101,7 +118,7 @@ const LandingPage = () => {
                     marginBottom: '10px', 
                     textTransform: 'uppercase',
                     lineHeight: '0.9',
-                    color: HappyHuesTheme.headline
+                    color: HappyHuesTheme.highlight
                 }}>
                     SEBEL <span style={{ color: HappyHuesTheme.button }}>School</span>
                 </h1>
@@ -125,7 +142,7 @@ const LandingPage = () => {
             </header>
 
             <div style={gridStyle}>
-                <StyledCard title="Banyak Prestasi" accentColor={HappyHuesTheme.button}>
+                <StyledCard title="Banyak Prestasi" accentColor={HappyHuesTheme.highlight}>
                     <p style={{color: HappyHuesTheme.stroke}}>Berburu banyak prestasi adalah pencapaian bonus sekolah selain belajar ilmu pengetahuan dan pengembangan potensi diri</p>
                 </StyledCard>
                 <StyledCard title="Manajemen Transparansi" accentColor={HappyHuesTheme.secondary}>
@@ -173,15 +190,60 @@ const LandingPage = () => {
                 </div>
             </section>
 
+            {/* --- SECTION INFORMASI KONTAK BARU (MENGGUNAKAN STYLED COMPONENT) --- */}
+            <section style={contactSectionStyle}>
+                <div style={contactGridStyle}>
+                    
+                    {/* Kartu Alamat */}
+                    <StyledCard title="📍 Alamat Sekolah" accentColor={HappyHuesTheme.highlight}>
+                        <p style={{ color: HappyHuesTheme.stroke, margin: 0, fontSize: '0.95rem', lineHeight: '1.6' }}>
+                            Jl. Rangkah 6,<br />
+                            Kota Surabaya, Jawa Timur 60123 
+                            {currentCity && <span style={{ display: 'block', marginTop: '10px', color: HappyHuesTheme.secondary }}>📍 (Lokasi Anda: {currentCity})</span>}
+                        </p>
+                    </StyledCard>
+
+                    {/* Kartu Email */}
+                    <StyledCard title="✉️ Email Resmi" accentColor={HappyHuesTheme.secondary}>
+                        <p style={{ color: HappyHuesTheme.stroke, margin: '0 0 15px 0', fontSize: '0.95rem', lineHeight: '1.5' }}>
+                            Kirim pertanyaan resmi atau proposal kerja sama melalui email:
+                        </p>
+                        <StyledButton 
+                            label="Kirim Email" 
+                            fullWidth={true}
+                            onClick={() => window.location.href = "mailto:info@sebelschool.sch.id"} 
+                        />
+                    </StyledCard>
+
+                    {/* Kartu Admin WhatsApp */}
+                    <StyledCard title="📞 Hubungi Admin" accentColor={HappyHuesTheme.tertiary}>
+                        <p style={{ color: HappyHuesTheme.stroke, margin: '0 0 15px 0', fontSize: '0.95rem', lineHeight: '1.5' }}>
+                            Layanan cepat via WhatsApp Chat Admin:
+                            <span style={{ display: 'block', fontSize: '11px', color: HappyHuesTheme.button, marginTop: '5px' }}>
+                                Senin - Jumat (07.00 - 15.00 WIB)
+                            </span>
+                        </p>
+                        <StyledButton 
+                            label="Chat WhatsApp" 
+                            type="secondary"
+                            fullWidth={true}
+                            onClick={() => window.open("https://wa.me/6289508120541", "_blank")} 
+                        />
+                    </StyledCard>
+
+                </div>
+            </section>
+
             <footer style={{ 
                 textAlign: 'center', 
                 padding: '40px', 
                 borderTop: `3px solid ${HappyHuesTheme.stroke}`,
-                marginTop: '60px',
+                marginTop: '40px',
                 color: HappyHuesTheme.paragraph
             }}>
                 <p>© 2026 SmartSchool Project. Build with Passion.</p>
             </footer>
+
             <ModalCustom
                 isOpen={showCookieModal}
                 onClose={() => setShowCookieModal(false)}
